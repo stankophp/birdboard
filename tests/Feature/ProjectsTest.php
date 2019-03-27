@@ -25,12 +25,12 @@ class ProjectsTest extends TestCase
     /** @test */
     public function a_user_can_create_a_project()
     {
-        $this->withExceptionHandling();
+        $this->actingAs(factory('App\User')->create());
+        $this->withoutExceptionHandling();
 
-        $attributes = [
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->sentence
-        ];
+        $attributes = factory('App\Project')->raw();
+//        dd($attributes);
+
         $this->post('/projects', $attributes)->assertRedirect('/projects');
 
         $this->assertDatabaseHas('projects', $attributes);
@@ -41,7 +41,7 @@ class ProjectsTest extends TestCase
     /** @test */
     public function a_project_needs_title()
     {
-        $this->withExceptionHandling();
+        $this->actingAs(factory('App\User')->create());
 
         $attributes = factory('App\Project')->raw(['title' => '']);
 
@@ -51,7 +51,7 @@ class ProjectsTest extends TestCase
     /** @test */
     public function a_project_needs_description()
     {
-        $this->withExceptionHandling();
+        $this->actingAs(factory('App\User')->create());
 
         $attributes = factory('App\Project')->raw(['description' => '']);
 
@@ -59,19 +59,29 @@ class ProjectsTest extends TestCase
     }
 
     /** @test */
-    public function a_project_needs_owner()
+    public function a_project_needs_an_owner()
     {
-        $this->withExceptionHandling();
+//        $this->actingAs(factory('App\User')->create());
+
+        $attributes = factory('App\Project')->raw(['owner_id' => '']);
+
+        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
+    }
+
+    /** @test */
+    public function only_an_auth_user_can_creat_a_project()
+    {
+//        $this->withoutExceptionHandling();
 
         $attributes = factory('App\Project')->raw();
 
-        $this->post('/projects', $attributes)->assertSessionHasErrors('owner');
+        $this->post('/projects', $attributes)->assertRedirect('login');
     }
 
     /** @test */
     public function a_user_can_view_a_project()
     {
-        $this->withExceptionHandling();
+        $this->withoutExceptionHandling();
 
         $project = factory('App\Project')->create();
 
