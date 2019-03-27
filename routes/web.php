@@ -14,3 +14,21 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('projects', 'ProjectsController');
+
+
+//Route::get('/projects', function () {
+//    $projects = App\Project::all();
+//
+//    return view('projects.index', compact('projects'));
+//});
+
+//Route::post('/projects', function () {
+//    // validate
+//
+//    // persist
+//    App\Project::create(request(['title', 'description']));
+//
+//    // redirect
+//});
