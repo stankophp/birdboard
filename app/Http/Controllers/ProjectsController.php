@@ -4,9 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProjectsController extends Controller
 {
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +26,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = Project::all();
+        $projects = auth()->user()->projects;
 
         return view('projects.index', compact('projects'));
     }
@@ -39,10 +51,12 @@ class ProjectsController extends Controller
     {
         $this->middleware('auth');
 
-        $attributes = $request->validate(['title' => 'required', 'description' => 'required']);
-        $attributes['owner_id'] = auth()->id();
+        $attributes = $request->validate([
+            'title' => 'required',
+            'description' => 'required'
+        ]);
 
-        Project::create($attributes);
+        auth()->user()->projects()->create($attributes);
 
         return redirect('/projects');
     }
@@ -56,6 +70,10 @@ class ProjectsController extends Controller
     public function show($id)
     {
         $project = Project::findOrFail($id);
+
+        if (auth()->user()->isNot($project->owner)) {
+            abort(SymfonyResponse::HTTP_FORBIDDEN);
+        }
 
         return view('projects.show', compact('project'));
     }

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Project
@@ -31,5 +32,13 @@ class Project extends Model
     public function path()
     {
         return '/projects/'.$this->id;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class);
     }
 }

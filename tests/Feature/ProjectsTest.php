@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Project;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProjectsTest extends TestCase
 {
@@ -25,11 +27,12 @@ class ProjectsTest extends TestCase
     /** @test */
     public function a_user_can_create_a_project()
     {
-        $this->actingAs(factory('App\User')->create());
+        $user = factory('App\User')->create();
+        $this->actingAs($user);
         $this->withoutExceptionHandling();
 
         $attributes = factory('App\Project')->raw();
-//        dd($attributes);
+        $attributes['owner_id'] = $user->id;
 
         $this->post('/projects', $attributes)->assertRedirect('/projects');
 
@@ -59,34 +62,66 @@ class ProjectsTest extends TestCase
     }
 
     /** @test */
-    public function a_project_needs_an_owner()
-    {
+//    public function a_project_needs_an_owner()
+//    {
 //        $this->actingAs(factory('App\User')->create());
-
-        $attributes = factory('App\Project')->raw(['owner_id' => '']);
-
-        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
-    }
+//
+//        $attributes = factory('App\Project')->raw();
+//        $attributes['owner_id'] = null;
+//
+//        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
+//    }
 
     /** @test */
-    public function only_an_auth_user_can_creat_a_project()
+    public function guest_cant_create_a_project()
     {
-//        $this->withoutExceptionHandling();
-
         $attributes = factory('App\Project')->raw();
 
         $this->post('/projects', $attributes)->assertRedirect('login');
     }
 
     /** @test */
+    public function guest_cant_view_projects()
+    {
+        $this->get('/projects')->assertRedirect('login');
+    }
+
+    /** @test */
+    public function guest_cant_view_single_project()
+    {
+        /** @var $project Project */
+        $project = factory('App\Project')->create();
+        $this->get($project->path())->assertRedirect('login');
+    }
+
+    /** @test */
     public function a_user_can_view_a_project()
     {
+        $user = factory('App\User')->create();
+        $this->actingAs($user);
+
         $this->withoutExceptionHandling();
 
-        $project = factory('App\Project')->create();
+        /** @var $project Project */
+        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
 
         $this->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
+    }
+
+    /** @test */
+    public function a_user_cant_view_projects_of_other_users()
+    {
+        $user = factory('App\User')->create();
+        $this->actingAs($user);
+
+//        $this->withoutExceptionHandling();
+
+        /** @var $project Project */
+        $project = factory('App\Project')->create();
+
+        $this->get($project->path())
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
     }
 }
