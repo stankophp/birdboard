@@ -19,6 +19,8 @@ class ManageProjectsTest extends TestCase
         $this->actingAs($user);
         $this->withoutExceptionHandling();
 
+        $this->get('/projects/create')->assertStatus(SymfonyResponse::HTTP_OK);
+
         $attributes = factory('App\Project')->raw();
         $attributes['owner_id'] = $user->id;
 
@@ -61,22 +63,19 @@ class ManageProjectsTest extends TestCase
 //    }
 
     /** @test */
-    public function guest_cant_create_a_project()
+    public function guest_cant_manage_projects()
     {
-        $attributes = factory('App\Project')->raw();
-
-        $this->post('/projects', $attributes)->assertRedirect('login');
-    }
-
-    /** @test */
-    public function guest_cant_view_projects()
-    {
+        // index
         $this->get('/projects')->assertRedirect('login');
-    }
 
-    /** @test */
-    public function guest_cant_view_single_project()
-    {
+        // store
+        $attributes = factory('App\Project')->raw();
+        $this->post('/projects', $attributes)->assertRedirect('login');
+
+        // create
+        $this->get('/projects/create')->assertRedirect('login');
+
+        // view
         /** @var $project Project */
         $project = factory('App\Project')->create();
         $this->get($project->path())->assertRedirect('login');
