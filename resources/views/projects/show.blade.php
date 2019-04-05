@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    <header>
 
-    <h1>
-        {{ $project->title }}
-    </h1>
-    <div>{{ $project->description }}</div>
-    <a href="{{ route('projects.index') }}">Back</a>
+    </header>
+
+    <main>
+        <h1>
+            {{ $project->title }}
+        </h1>
+        <div>{{ $project->description }}</div>
+    </main>
 
 @endsection
