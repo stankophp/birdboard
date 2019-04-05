@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Project;
+use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,8 +16,8 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_create_a_project()
     {
-        $user = factory('App\User')->create();
-        $this->actingAs($user);
+        $user = factory(User::class)->create();
+        $this->signIn($user);
         $this->withoutExceptionHandling();
 
         $this->get('/projects/create')->assertStatus(SymfonyResponse::HTTP_OK);
@@ -34,7 +35,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_needs_title()
     {
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
 
         $attributes = factory('App\Project')->raw(['title' => '']);
 
@@ -44,7 +45,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_needs_description()
     {
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
 
         $attributes = factory('App\Project')->raw(['description' => '']);
 
@@ -73,8 +74,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_view_a_project()
     {
-        $user = factory('App\User')->create();
-        $this->actingAs($user);
+        $this->signIn();
 
         $this->withoutExceptionHandling();
 
@@ -89,8 +89,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_cant_view_projects_of_other_users()
     {
-        $user = factory('App\User')->create();
-        $this->actingAs($user);
+        $this->signIn();
 
 //        $this->withoutExceptionHandling();
 
