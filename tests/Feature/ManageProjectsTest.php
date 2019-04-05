@@ -52,17 +52,6 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
-//    public function a_project_needs_an_owner()
-//    {
-//        $this->actingAs(factory('App\User')->create());
-//
-//        $attributes = factory('App\Project')->raw();
-//        $attributes['owner_id'] = null;
-//
-//        $this->post('/projects', $attributes)->assertSessionHasErrors('owner_id');
-//    }
-
-    /** @test */
     public function guest_cant_manage_projects()
     {
         // index

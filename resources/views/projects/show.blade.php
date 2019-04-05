@@ -6,5 +6,6 @@
         {{ $project->title }}
     </h1>
     <div>{{ $project->description }}</div>
+    <a href="{{ route('projects.index') }}">Back</a>
 
 @endsection

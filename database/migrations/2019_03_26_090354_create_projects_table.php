@@ -20,8 +20,8 @@ class CreateProjectsTable extends Migration
             $table->text('description');
             $table->timestamps();
 
-           $table->engine = 'InnoDB';
-           $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->engine = 'InnoDB';
+            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

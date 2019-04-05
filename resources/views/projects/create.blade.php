@@ -9,30 +9,30 @@
 <form class="form-horizontal" role="form" method="POST" action="/projects">
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
-    <div class="form-group">
-        <label for="title" class="col-md-3 control-label">
+    <div class="field">
+        <label for="title" class="label">
             Title
         </label>
-        <div class="col-md-8">
+        <div class="control">
             <input type="text" class="form-control" name="title" id="title" value="{{ old('title') }}">
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="description" class="col-md-3 control-label">
+    <div class="field">
+        <label for="description" class="label">
             Description
         </label>
-        <div class="col-md-8">
+        <div class="control">
             <textarea class="form-control" id="description" name="description" rows="3">{{ old('description') }}</textarea>
         </div>
     </div>
 
-    <div class="form-group">
-        <div class="col-md-7 col-md-offset-3">
-            <button type="submit" class="btn btn-primary btn-md">
-                <i class="fa fa-plus-circle"></i>
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-link btn btn-primary btn-md">
                 Add New Project
             </button>
+            <a href="{{ route('projects.index') }}">Cancel</a>
         </div>
     </div>
 
