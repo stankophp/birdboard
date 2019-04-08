@@ -16,6 +16,7 @@ class ProjectTaskTest extends TestCase
     {
         $this->signIn();
 
+        /** @var  $project Project */
         $project = factory(Project::class)->create(['owner_id' => auth()->id()]);
 
         $body = 'A Project Can Have Tasks';
@@ -23,5 +24,17 @@ class ProjectTaskTest extends TestCase
 
         $this->get($project->path())
             ->assertSee($body);
+    }
+
+    /** @test */
+    public function a_task_needs_body()
+    {
+        $this->signIn();
+
+        /** @var  $project Project */
+        $project = factory(Project::class)->create(['owner_id' => auth()->id()]);
+        $attributes = factory('App\Task')->raw(['body' => '']);
+
+        $this->post($project->path().'/tasks', $attributes)->assertSessionHasErrors('body');
     }
 }

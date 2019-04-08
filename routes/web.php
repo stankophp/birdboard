@@ -21,4 +21,8 @@ Route::post('projects/{project}/tasks', 'ProjectTasksController@store')->middlew
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/home', function () {
+    return redirect(route('projects.index'));
+});

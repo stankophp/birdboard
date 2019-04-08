@@ -12,14 +12,7 @@
 
         @forelse($projects as $project)
             <div class="w-1/3 px-3 pb-6">
-                <div class="bg-white mx-3 p-5 rounded-lg shadow" style="height: 200px">
-                    <h3 class="font-normal text-xl py-4 mb-3 border-l-4 border-blue-light pl-4 -ml-5">
-                        <a class="text-black no-underline" href="{{ route('projects.show', ['project' => $project->id]) }}">
-                            {{ $project->title }}
-                        </a>
-                    </h3>
-                    <div class="text-grey">{{ Str::limit($project->description, 200) }}</div>
-                </div>
+            @include('projects.card')
             </div>
         @empty
             <li>No projects.</li>
