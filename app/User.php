@@ -33,6 +33,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static Builder|\App\User whereRememberToken($value)
  * @method static Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Project[] $projects
  */
 class User extends Authenticatable
 {

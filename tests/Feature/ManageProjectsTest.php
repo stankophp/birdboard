@@ -83,7 +83,7 @@ class ManageProjectsTest extends TestCase
 
         $this->get($project->path())
             ->assertSee($project->title)
-            ->assertSee($project->description);
+            ->assertSee(substr($project->description, 0, 150));
     }
 
     /** @test */

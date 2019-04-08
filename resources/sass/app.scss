@@ -1,6 +1,6 @@
 
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
 @import 'variables';
@@ -8,11 +8,11 @@
 // Bootstrap
 //@import '~bootstrap/scss/bootstrap';
 
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
+//.navbar-laravel {
+//  background-color: #fff;
+//  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+//}
+/**********************************************************************************************************************/
 /**
  * This injects Tailwind's base styles, which is a combination of
  * Normalize.css and some additional base styles.
@@ -50,6 +50,19 @@
  * @import "components/buttons";
  * @import "components/forms";
  */
+
+.section {
+  @apply .px-4;
+}
+
+.button {
+  @apply .bg-blue .text-white .no-underline .rounded-lg .py-2 .px-5;
+  box-shadow: 0 2px 7px 0 #b0eaff;
+}
+
+.card {
+  @apply .bg-white .p-5 .rounded-lg .shadow;
+}
 
 /**
  * This injects all of Tailwind's utility classes, generated based on your

@@ -17,11 +17,25 @@
                 <div class="mb-8">
                     <h2 class="text-grey text-lg font-normal mb-3">Tasks</h2>
                     @foreach($project->tasks as $task)
-                    <div class="card mb-3">{{ $task->body }}</div>
+                    <div class="card mb-3">
+                        <form method="post" action="{{ $task->path() }}">
+                            @method('PATCH')
+                            {{ csrf_field() }}
+                            <div class="flex">
+                                <input type="text" name="body" id="body" value="{{ $task->body }}" class="w-full">
+                                <input type="checkbox" name="completed" id="completed" onchange="this.form.submit()">
+
+                            </div>
+                        </form>
+                    </div>
                     @endforeach
-{{--                    <div class="card mb-3">Lorem </div>--}}
-{{--                    <div class="card mb-3">Lorem </div>--}}
-{{--                    <div class="card">Lorem </div>--}}
+                </div>
+
+                <div class="card mb-3">
+                    <form action="{{ $project->path().'/tasks' }}" method="POST">
+                        {{ csrf_field() }}
+                        <input type="text" name="body" id="body" class="w-full" placeholder="Add new task...">
+                    </form>
                 </div>
 
                 <div class="mb-8">

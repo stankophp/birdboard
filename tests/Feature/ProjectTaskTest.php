@@ -6,6 +6,7 @@ use App\Project;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProjectTaskTest extends TestCase
 {
@@ -36,5 +37,20 @@ class ProjectTaskTest extends TestCase
         $attributes = factory('App\Task')->raw(['body' => '']);
 
         $this->post($project->path().'/tasks', $attributes)->assertSessionHasErrors('body');
+    }
+
+    /** @test */
+    public function only_an_owner_can_add_task_to_project()
+    {
+        $this->signIn();
+
+        /** @var  $project Project */
+        $project = factory(Project::class)->create();
+        $body = 'A Project Can Have Tasks';
+        $attributes = factory('App\Task')->raw(['body' => $body]);
+
+        $this->post($project->path().'/tasks', $attributes)
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
+        $this->assertDatabaseMissing('tasks', ['body' => $body]);
     }
 }

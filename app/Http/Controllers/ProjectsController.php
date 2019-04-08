@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use App\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -16,7 +17,7 @@ class ProjectsController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -26,7 +27,10 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = auth()->user()->projects;
+        /** @var User $user */
+        $user = auth()->user();
+
+        $projects = $user->projects;
 
         return view('projects.index', compact('projects'));
     }
@@ -49,16 +53,19 @@ class ProjectsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->middleware('auth');
-
         $attributes = $request->validate([
             'title' => 'required',
             'description' => 'required'
         ]);
 
-        auth()->user()->projects()->create($attributes);
+        /** @var User $user */
+        $user = auth()->user();
 
-        return redirect('/projects');
+        /** @var $project Project */
+        $project = $user->projects()->create($attributes);
+
+//        return redirect($project->path());
+        return redirect(route('projects.index'));
     }
 
     /**
@@ -69,9 +76,13 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
+        /** @var $project Project */
         $project = Project::findOrFail($id);
 
-        if (auth()->user()->isNot($project->owner)) {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->isNot($project->owner)) {
             abort(SymfonyResponse::HTTP_FORBIDDEN);
         }
 

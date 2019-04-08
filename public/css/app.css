@@ -1,7 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Nunito);.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04);
-}
+/**********************************************************************************************************************/
 
 /**
  * This injects Tailwind's base styles, which is a combination of
@@ -570,6 +567,30 @@ table {
  * @import "components/buttons";
  * @import "components/forms";
  */
+
+.section {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.button {
+  background-color: #3490dc;
+  color: #fff;
+  text-decoration: none;
+  border-radius: .5rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  box-shadow: 0 2px 7px 0 #b0eaff;
+}
+
+.card {
+  background-color: #fff;
+  padding: 1.25rem;
+  border-radius: .5rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
+}
 
 /**
  * This injects all of Tailwind's utility classes, generated based on your

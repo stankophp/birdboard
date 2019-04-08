@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use App\User;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ProjectTasksController extends Controller
 {
@@ -35,6 +37,13 @@ class ProjectTasksController extends Controller
      */
     public function store(Project $project)
     {
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->isNot($project->owner)) {
+            abort(SymfonyResponse::HTTP_FORBIDDEN);
+        }
+
         request()->validate(['body' => 'required']);
         $project->addTask(request('body'));
 
