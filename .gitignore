@@ -9,3 +9,11 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+.idea/birdboard.iml
+.idea/php.xml
+.idea/workspace.xml
+.idea/dictionaries/
+storage/debugbar/
+_ide_helper.php
+_ide_helper_models.php
+
