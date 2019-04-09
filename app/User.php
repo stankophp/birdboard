@@ -21,6 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Project[] $projects
  * @method static Builder|\App\User newModelQuery()
  * @method static Builder|\App\User newQuery()
  * @method static Builder|\App\User query()
@@ -33,7 +34,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static Builder|\App\User whereRememberToken($value)
  * @method static Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Project[] $projects
  */
 class User extends Authenticatable
 {

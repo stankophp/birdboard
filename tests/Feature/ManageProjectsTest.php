@@ -25,7 +25,8 @@ class ManageProjectsTest extends TestCase
         $attributes = factory('App\Project')->raw();
         $attributes['owner_id'] = $user->id;
 
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $response = $this->post('/projects', $attributes);
+        $response->assertRedirect(Project::where($attributes)->first()->path());
 
         $this->assertDatabaseHas('projects', $attributes);
 
@@ -90,8 +91,6 @@ class ManageProjectsTest extends TestCase
     public function a_user_cant_view_projects_of_other_users()
     {
         $this->signIn();
-
-//        $this->withoutExceptionHandling();
 
         /** @var $project Project */
         $project = factory('App\Project')->create();

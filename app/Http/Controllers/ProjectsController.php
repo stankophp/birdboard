@@ -64,8 +64,7 @@ class ProjectsController extends Controller
         /** @var $project Project */
         $project = $user->projects()->create($attributes);
 
-//        return redirect($project->path());
-        return redirect(route('projects.index'));
+        return redirect($project->path());
     }
 
     /**

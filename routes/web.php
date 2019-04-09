@@ -18,6 +18,7 @@ Route::get('/', function () {
 Route::resource('projects', 'ProjectsController')->only(['index', 'show', 'create', 'store'])->middleware('auth');
 
 Route::post('projects/{project}/tasks', 'ProjectTasksController@store')->middleware('auth');
+Route::patch('projects/{project}/tasks/{task}', 'ProjectTasksController@update')->middleware('auth');
 
 Auth::routes();
 

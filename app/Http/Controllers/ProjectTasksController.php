@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use App\Task;
 use App\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -75,13 +76,26 @@ class ProjectTasksController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param Project $project
+     * @param Task $task
+     * @return void
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project, Task $task)
     {
-        //
+        /** @var User $user */
+        $user = auth()->user();
+
+        if ($user->isNot($project->owner)) {
+            abort(SymfonyResponse::HTTP_FORBIDDEN);
+        }
+
+        $task->update([
+            'body' => $request->get('body'),
+            'completed' => $request->has('completed'),
+        ]);
+
+        return redirect($project->path());
     }
 
     /**

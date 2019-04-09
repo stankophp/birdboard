@@ -13,6 +13,15 @@ class TaskTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function it_belongs_to_a_project()
+    {
+        /** @var $task Task */
+        $task = factory('App\Task')->create();
+
+        $this->assertInstanceOf(Project::class, $task->project);
+    }
+
+    /** @test */
     public function it_has_a_path()
     {
         $this->withExceptionHandling();
@@ -22,7 +31,7 @@ class TaskTest extends TestCase
         /** @var $task Task */
         $task = $project->addTask('Some body');
 
-        $this->assertEquals('/projects/'.$task->project_id.'/tasks/'.$task->id, $task->path());
+        $this->assertEquals('/projects/'.$task->project->id.'/tasks/'.$task->id, $task->path());
     }
 
     /** @test */

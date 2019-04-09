@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $owner
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Task[] $tasks
  * @method static Builder|\App\Project newModelQuery()
  * @method static Builder|\App\Project newQuery()
  * @method static Builder|\App\Project query()
@@ -25,8 +27,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|\App\Project whereTitle($value)
  * @method static Builder|\App\Project whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\User $owner
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Task[] $tasks
  */
 class Project extends Model
 {
