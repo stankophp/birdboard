@@ -35,15 +35,11 @@ class ProjectTasksController extends Controller
      *
      * @param Project $project
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function store(Project $project)
     {
-        /** @var User $user */
-        $user = auth()->user();
-
-        if ($user->isNot($project->owner)) {
-            abort(SymfonyResponse::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $project);
 
         request()->validate(['body' => 'required']);
         $project->addTask(request('body'));
@@ -80,15 +76,11 @@ class ProjectTasksController extends Controller
      * @param Project $project
      * @param Task $task
      * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, Project $project, Task $task)
     {
-        /** @var User $user */
-        $user = auth()->user();
-
-        if ($user->isNot($project->owner)) {
-            abort(SymfonyResponse::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $task->project);
 
         $task->update([
             'body' => $request->get('body'),

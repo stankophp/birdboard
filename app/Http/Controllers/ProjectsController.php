@@ -55,7 +55,8 @@ class ProjectsController extends Controller
     {
         $attributes = $request->validate([
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required|max:150',
+            'notes' => 'max:255'
         ]);
 
         /** @var User $user */
@@ -70,8 +71,9 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show($id)
     {
@@ -81,9 +83,7 @@ class ProjectsController extends Controller
         /** @var User $user */
         $user = auth()->user();
 
-        if ($user->isNot($project->owner)) {
-            abort(SymfonyResponse::HTTP_FORBIDDEN);
-        }
+        $this->authorize('update', $project);
 
         return view('projects.show', compact('project'));
     }
@@ -102,13 +102,23 @@ class ProjectsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Request $request, $id)
     {
-        //
+        /** @var $project Project */
+        $project = Project::findOrFail($id);
+
+        $this->authorize('update', $project);
+
+        $project->update([
+            'notes' => $request->get('notes'),
+        ]);
+
+        return redirect($project->path());
     }
 
     /**
