@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Project;
 use App\User;
+use Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +19,6 @@ class ManageProjectsTest extends TestCase
     {
         $user = factory(User::class)->create();
         $this->signIn($user);
-        $this->withoutExceptionHandling();
 
         $this->get('/projects/create')->assertStatus(SymfonyResponse::HTTP_OK);
 
@@ -47,20 +47,19 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_update_a_project()
     {
-        $user = factory(User::class)->create();
-        $this->signIn($user);
-        $this->withoutExceptionHandling();
-
         /** @var $project Project */
-        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+        $project = app(ProjectFactory::class)->create();
 
         $attributes = [
             'notes' => $this->faker->sentence,
         ];
 
-        $this->patch($project->path(), $attributes)->assertRedirect($project->path());
+        $this->actingAs($project->owner)
+            ->patch($project->path(), $attributes)->assertRedirect($project->path());
+
         $this->assertDatabaseHas('projects', $attributes);
-        $this->get($project->path())->assertSee($attributes['notes']);
+        $this->get($project->path())
+            ->assertSee($attributes['notes']);
     }
 
     /** @test */
@@ -105,14 +104,11 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_view_a_project()
     {
-        $this->signIn();
-
-        $this->withoutExceptionHandling();
-
         /** @var $project Project */
-        $project = factory('App\Project')->create(['owner_id' => auth()->id()]);
+        $project = app(ProjectFactory::class)->create();
 
-        $this->get($project->path())
+        $this->actingAs($project->owner)
+            ->get($project->path())
             ->assertSee($project->title)
             ->assertSee(substr($project->description, 0, 150));
     }

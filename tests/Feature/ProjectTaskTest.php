@@ -4,11 +4,10 @@ namespace Tests\Feature;
 
 use App\Project;
 use App\Task;
-use App\User;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Tests\Setup\ProjectFactory;
+use Tests\TestCase;
 
 class ProjectTaskTest extends TestCase
 {
@@ -17,13 +16,12 @@ class ProjectTaskTest extends TestCase
     /** @test */
     public function a_project_can_have_tasks()
     {
-        $this->signIn();
-
         /** @var Project $project */
-        $project = factory(Project::class)->create(['owner_id' => auth()->id()]);
+        $project = app(ProjectFactory::class)->create();
 
         $body = 'A Project Can Have Tasks';
-        $this->post($project->path() . '/tasks', ['body' => $body]);
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/tasks', ['body' => $body]);
 
         $this->get($project->path())
             ->assertSee($body);
@@ -32,13 +30,14 @@ class ProjectTaskTest extends TestCase
     /** @test */
     public function a_task_needs_body()
     {
-        $this->signIn();
-
         /** @var Project $project */
-        $project = factory(Project::class)->create(['owner_id' => auth()->id()]);
+        $project = app(ProjectFactory::class)->create();
+
         $attributes = factory('App\Task')->raw(['body' => '']);
 
-        $this->post($project->path().'/tasks', $attributes)->assertSessionHasErrors('body');
+        $this->actingAs($project->owner)
+            ->post($project->path().'/tasks', $attributes)
+            ->assertSessionHasErrors('body');
     }
 
     /** @test */
@@ -46,10 +45,13 @@ class ProjectTaskTest extends TestCase
     {
         $this->signIn();
 
-        /** @var Project $project */
-        $project = factory(Project::class)->create();
         $body = 'A Project Can Have Tasks';
-        $attributes = factory('App\Task')->raw(['body' => $body]);
+        $attributes = ['body' => $body];
+
+        /** @var Project $project */
+        $project = app(ProjectFactory::class)
+            ->withTasks(1)
+            ->create();
 
         $this->post($project->path().'/tasks', $attributes)
             ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
@@ -63,14 +65,13 @@ class ProjectTaskTest extends TestCase
         $this->signIn();
 
         /** @var Project $project */
-        $project = factory(Project::class)->create();
-        $body = 'A Project Can Have Tasks';
-        /** @var Task $task */
-        $task = $project->addTask($body);
+        $project = app(ProjectFactory::class)
+            ->withTasks(1)
+            ->create();
 
         $attributes = ['body' => 'Updated', 'completed' => true];
 
-        $this->patch($task->path(), $attributes)
+        $this->patch($project->tasks->first()->path(), $attributes)
             ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
 
         $this->assertDatabaseMissing('tasks', $attributes);
@@ -79,19 +80,15 @@ class ProjectTaskTest extends TestCase
     /** @test */
     public function a_task_can_be_updated()
     {
-        $this->signIn();
-
-        /** @var User $user */
-        $user = auth()->user();
-
         /** @var Project $project */
-        $project = $user->projects()->create(factory(Project::class)->raw());
-        /** @var Task $task */
-        $task = $project->addTask('attributes factory');
+        $project = app(ProjectFactory::class)
+            ->withTasks(1)
+            ->create();
 
         $attributes = ['body' => 'Updated', 'completed' => true];
 
-        $this->patch($task->path(), $attributes);
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), $attributes);
 
         $this->assertDatabaseHas('tasks', $attributes);
     }
