@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectCreateRequest;
+use App\Http\Requests\ProjectUpdateRequest;
 use App\Project;
 use App\User;
 use Illuminate\Http\Request;
@@ -51,19 +53,13 @@ class ProjectsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProjectCreateRequest $request)
     {
-        $attributes = $request->validate([
-            'title' => 'required',
-            'description' => 'required|max:150',
-            'notes' => 'max:255'
-        ]);
-
         /** @var User $user */
         $user = auth()->user();
 
         /** @var $project Project */
-        $project = $user->projects()->create($attributes);
+        $project = $user->projects()->create($request->validated());
 
         return redirect($project->path());
     }
@@ -71,18 +67,12 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param Project $project
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show($id)
+    public function show(Project $project)
     {
-        /** @var $project Project */
-        $project = Project::findOrFail($id);
-
-        /** @var User $user */
-        $user = auth()->user();
-
         $this->authorize('update', $project);
 
         return view('projects.show', compact('project'));
@@ -91,32 +81,27 @@ class ProjectsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param Project $project
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function edit($id)
+    public function edit(Project $project)
     {
-        //
+        $this->authorize('update', $project);
+
+        return view('projects.edit', compact('project'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param ProjectUpdateRequest $request
+     * @param Project $project
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, $id)
+    public function update(ProjectUpdateRequest $request, Project $project)
     {
-        /** @var $project Project */
-        $project = Project::findOrFail($id);
-
-        $this->authorize('update', $project);
-
-        $project->update([
-            'notes' => $request->get('notes'),
-        ]);
+        $project->update($request->validated());
 
         return redirect($project->path());
     }
@@ -124,11 +109,14 @@ class ProjectsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return void
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        return redirect(route('projects.index'));
     }
 }
