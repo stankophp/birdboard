@@ -78,7 +78,23 @@ class ProjectTaskTest extends TestCase
     }
 
     /** @test */
-    public function a_task_can_be_updated()
+    public function a_task_body_can_be_updated()
+    {
+        /** @var Project $project */
+        $project = app(ProjectFactory::class)
+            ->withTasks(1)
+            ->create();
+
+        $attributes = ['body' => 'Updated'];
+
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), $attributes);
+
+        $this->assertDatabaseHas('tasks', $attributes);
+    }
+
+    /** @test */
+    public function a_task_can_be_completed()
     {
         /** @var Project $project */
         $project = app(ProjectFactory::class)
@@ -86,6 +102,27 @@ class ProjectTaskTest extends TestCase
             ->create();
 
         $attributes = ['body' => 'Updated', 'completed' => true];
+
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), $attributes);
+
+        $this->assertDatabaseHas('tasks', $attributes);
+    }
+
+    /** @test */
+    public function a_task_can_be_not_completed()
+    {
+        /** @var Project $project */
+        $project = app(ProjectFactory::class)
+            ->withTasks(1)
+            ->create();
+
+        $attributes = ['body' => 'Updated', 'completed' => true];
+
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), $attributes);
+
+        $attributes = ['body' => 'Updated', 'completed' => false];
 
         $this->actingAs($project->owner)
             ->patch($project->tasks->first()->path(), $attributes);

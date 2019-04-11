@@ -24,6 +24,31 @@ class TaskTest extends TestCase
     /** @test */
     public function it_has_a_path()
     {
+        /** @var $project Project */
+        $project = factory('App\Project')->create();
+        /** @var $task Task */
+        $task = $project->addTask('Some body');
+
+        $this->assertEquals('/projects/'.$task->project->id.'/tasks/'.$task->id, $task->path());
+    }
+
+    /** @test */
+    public function it_can_be_completed()
+    {
+        /** @var $project Project */
+        $project = factory('App\Project')->create();
+        /** @var $task Task */
+        $task = $project->addTask('Some body');
+
+        $this->assertFalse($task->fresh()->completed);
+        $task->complete();
+
+        $this->assertTrue($task->fresh()->completed);
+    }
+
+    /** @test */
+    public function it_can_be_incompleted()
+    {
         $this->withExceptionHandling();
 
         /** @var $project Project */
@@ -31,7 +56,11 @@ class TaskTest extends TestCase
         /** @var $task Task */
         $task = $project->addTask('Some body');
 
-        $this->assertEquals('/projects/'.$task->project->id.'/tasks/'.$task->id, $task->path());
+        $task->complete();
+        $this->assertTrue($task->fresh()->completed);
+
+        $task->incomplete();
+        $this->assertFalse($task->fresh()->completed);
     }
 
     /** @test */
