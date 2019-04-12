@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Activity;
 use App\Project;
+use App\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Setup\ProjectFactory;
@@ -19,7 +21,7 @@ class RecordActivityTest extends TestCase
         $project = app(ProjectFactory::class)->create();
 
         $this->assertCount(1, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
+        $this->assertEquals('project_created', $project->activity[0]->description);
     }
 
     /** @test */
@@ -30,20 +32,26 @@ class RecordActivityTest extends TestCase
         $project->update(['title' => 'Updated']);
 
         $this->assertCount(2, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
-        $this->assertEquals('updated', $project->activity[1]->description);
+        $this->assertEquals('project_created', $project->activity[0]->description);
+        $this->assertEquals('project_updated', $project->activity[1]->description);
     }
 
     /** @test */
     public function creating_a_task()
     {
+        $body = 'Some title';
         /** @var Project $project */
         $project = app(ProjectFactory::class)->create();
-        $project->addTask('title');
+        $project->addTask($body);
 
         $this->assertCount(2, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
-        $this->assertEquals('created_task', $project->activity[1]->description);
+
+        tap($project->activity->last(), function ($activity) {
+            /** @var Activity $activity*/
+            $this->assertEquals('task_created', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertEquals('Some title', $activity->subject->body);
+        });
     }
 
     /** @test */
@@ -62,9 +70,16 @@ class RecordActivityTest extends TestCase
             ->patch($project->tasks->first()->path(), $attributes);
 
         $this->assertCount(3, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
-        $this->assertEquals('created_task', $project->activity[1]->description);
-        $this->assertEquals('completed_task', $project->activity[2]->description);
+        $this->assertEquals('project_created', $project->activity[0]->description);
+        $this->assertEquals('task_created', $project->activity[1]->description);
+        $this->assertEquals('task_completed', $project->activity[2]->description);
+
+        tap($project->activity->last(), function ($activity) {
+            /** @var Activity $activity*/
+            $this->assertEquals('task_completed', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertEquals('Updated', $activity->subject->body);
+        });
     }
 
     /** @test */
@@ -83,9 +98,9 @@ class RecordActivityTest extends TestCase
             ->patch($project->tasks->first()->path(), $attributes);
 
         $this->assertCount(3, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
-        $this->assertEquals('created_task', $project->activity[1]->description);
-        $this->assertEquals('completed_task', $project->activity[2]->description);
+        $this->assertEquals('project_created', $project->activity[0]->description);
+        $this->assertEquals('task_created', $project->activity[1]->description);
+        $this->assertEquals('task_completed', $project->activity[2]->description);
 
         $attributes = ['body' => 'Updated', 'completed' => false];
 
@@ -93,10 +108,10 @@ class RecordActivityTest extends TestCase
 
         $project->refresh();
         $this->assertCount(4, $project->activity);
-        $this->assertEquals('created', $project->activity[0]->description);
-        $this->assertEquals('created_task', $project->activity[1]->description);
-        $this->assertEquals('completed_task', $project->activity[2]->description);
-        $this->assertEquals('incompleted_task', $project->activity[3]->description);
+        $this->assertEquals('project_created', $project->activity[0]->description);
+        $this->assertEquals('task_created', $project->activity[1]->description);
+        $this->assertEquals('task_completed', $project->activity[2]->description);
+        $this->assertEquals('task_incompleted', $project->activity[3]->description);
     }
 
     /** @test */

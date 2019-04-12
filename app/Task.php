@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
 /**
@@ -13,9 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $project_id
  * @property string $body
- * @property int $completed
+ * @property bool $completed
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Activity[] $activity
  * @property-read \App\Project $project
  * @method static Builder|\App\Task newModelQuery()
  * @method static Builder|\App\Task newQuery()
@@ -47,15 +49,31 @@ class Task extends Model
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return MorphMany
+     */
+    public function activity()
+    {
+        return $this->morphMany(Activity::class, 'subject')->latest();
+    }
+
+    public function recordActivity($description)
+    {
+        $this->activity()->create([
+            'description' => $description,
+            'project_id' => $this->project_id
+        ]);
+    }
+
     public function complete()
     {
         $this->update(['completed' => true]);
-        $this->project->recordActivity('task_completed');
+        $this->recordActivity('task_completed');
     }
 
     public function incomplete()
     {
         $this->update(['completed' => false]);
-        $this->project->recordActivity('task_incompleted');
+        $this->recordActivity('task_incompleted');
     }
 }

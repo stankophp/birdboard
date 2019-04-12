@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $subject
  * @method static Builder|\App\Activity newModelQuery()
  * @method static Builder|\App\Activity newQuery()
  * @method static Builder|\App\Activity query()
@@ -26,4 +27,9 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     protected $guarded = [];
+
+    public function subject()
+    {
+        return $this->morphTo();
+    }
 }
