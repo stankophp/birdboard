@@ -19,6 +19,8 @@ class ProjectsTableSeeder extends Seeder
 
         $projects = factory(Project::class, 10)->create(['owner_id' => 1]);
 
+        sleep(2);
+
         foreach ($projects as $project) {
             factory(Task::class, 3)->create(['project_id' => $project->id]);
         }
