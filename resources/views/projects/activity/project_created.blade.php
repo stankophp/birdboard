@@ -1,1 +1,1 @@
-You Created a Project "{{ $project->activity->first()->body }}"
+You Created a Project "{{ $project->title }}"
