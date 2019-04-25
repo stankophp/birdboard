@@ -35,10 +35,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Project extends Model
 {
-    protected $guarded = [];
+    use RecordsActivity;
 
-    /** @var array  */
-    public $old = [];
+    protected $guarded = [];
 
     public function path()
     {
@@ -72,25 +71,5 @@ class Project extends Model
     public function activity()
     {
         return $this->hasMany(Activity::class)->latest();
-    }
-
-    public function recordActivity($description)
-    {
-        $this->activity()->create([
-            'description' => $description,
-            'changes' => $this->activityChanges($description)
-        ]);
-    }
-
-    public function activityChanges($description)
-    {
-        if ($description === 'project_created') {
-            return null;
-        }
-
-        return [
-            'before' => array_diff($this->old, $this->getAttributes()),
-            'after' => $this->getChanges(),
-        ];
     }
 }

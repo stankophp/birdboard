@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
 /**
@@ -32,9 +31,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 class Task extends Model
 {
+    use RecordsActivity;
+
     protected $guarded = [];
     protected $touches = ['project'];
     protected $casts   = ['completed' => 'boolean'];
+
+    protected static $recordableEvents = ['created', 'deleted'];
 
     public function path()
     {
@@ -47,22 +50,6 @@ class Task extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
-    }
-
-    /**
-     * @return MorphMany
-     */
-    public function activity()
-    {
-        return $this->morphMany(Activity::class, 'subject')->latest();
-    }
-
-    public function recordActivity($description)
-    {
-        $this->activity()->create([
-            'description' => $description,
-            'project_id' => $this->project_id
-        ]);
     }
 
     public function complete()
