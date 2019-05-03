@@ -16,6 +16,7 @@ class CreateActivitiesTable extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('user_id');
             $table->nullableMorphs('subject');
             $table->string('description')->nullable();
             $table->text('changes')->nullable();
@@ -23,6 +24,7 @@ class CreateActivitiesTable extends Migration
 
             $table->engine = 'InnoDB';
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
