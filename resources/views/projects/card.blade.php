@@ -5,5 +5,12 @@
             {{ $project->title }}
         </a>
     </h3>
-    <div class="text-grey">{{ Str::limit($project->description, 150) }}</div>
+    <div class="text-grey mb-4">{{ Str::limit($project->description, 150) }}</div>
+    <footer>
+        <form method="POST" class="text-right" action="{{ route('projects.destroy', ['project' => $project->id]) }}">
+            @method('DELETE')
+            {{ csrf_field() }}
+            <button type="submit" class="button text-xs">Delete</button>
+        </form>
+    </footer>
 </div>

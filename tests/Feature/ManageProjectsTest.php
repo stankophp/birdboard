@@ -45,6 +45,39 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
+    public function a_user_can_delete_a_project()
+    {
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $this->signIn($user);
+
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
+
+        $this->actingAs($project->owner)
+            ->delete($project->path())
+            ->assertRedirect('/projects');
+
+        $this->assertDatabaseMissing('projects', $project->only('id'));
+    }
+
+    /** @test */
+    public function a_unauthorised_user_cant_delete_a_project()
+    {
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
+
+        $this->delete($project->path())
+            ->assertRedirect('/login');
+
+        $user = factory(User::class)->create();
+        $this->signIn($user);
+
+        $this->delete($project->path())
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
     public function a_user_can_update_a_project()
     {
 //        $this->withoutExceptionHandling();
