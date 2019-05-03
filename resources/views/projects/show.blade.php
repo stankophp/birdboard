@@ -7,7 +7,12 @@
             <p class="text-grey text-xl font-normal">
                 <a href="{{ route('projects.index') }}" class="text-grey text-xl font-normal no-underline">My Projects</a> / {{ $project->title }}
             </p>
-            <a href="{{ $project->path().'/edit' }}" class="button">Edit Project</a>
+            <div class="flex items-center">
+                @foreach($project->members as $member)
+                    <img src="https://gravatar.com/avatar/{{md5($member->email)}}?s=60" alt="{{ $member->name }}" class="rounded-full w-8 mr-2">
+                @endforeach
+                <a href="{{ $project->path().'/edit' }}" class="button ml-6">Edit Project</a>
+            </div>
         </div>
     </header>
 
