@@ -5,8 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
 
 /**
  * App\Project
@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Activity[] $activity
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $members
  * @property-read \App\User $owner
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Task[] $tasks
  * @method static Builder|\App\Project newModelQuery()
@@ -71,5 +72,19 @@ class Project extends Model
     public function activity()
     {
         return $this->hasMany(Activity::class)->latest();
+    }
+
+    public function invite(User $user)
+    {
+        $this->members()->attach($user);
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'project_members');
+
     }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Project;
+use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +18,7 @@ class ProjectTest extends TestCase
         $this->withExceptionHandling();
 
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
 
         $this->assertEquals('/projects/'.$project->id, $project->path());
     }
@@ -28,9 +29,9 @@ class ProjectTest extends TestCase
         $this->withExceptionHandling();
 
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
 
-        $this->assertInstanceOf('App\User', $project->owner);
+        $this->assertInstanceOf(User::class, $project->owner);
     }
 
     /** @test */
@@ -39,10 +40,25 @@ class ProjectTest extends TestCase
         $this->withExceptionHandling();
 
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
         $task = $project->addTask('New Task');
 
         $this->assertCount(1, $project->tasks);
         $this->assertTrue($project->tasks->contains($task));
+    }
+
+    /** @test */
+    public function it_can_invite_a_user()
+    {
+        $this->withExceptionHandling();
+
+        /** @var $user User */
+        $user = factory(User::class)->create();
+
+        /** @var $project Project */
+        $project = factory(Project::class)->create();
+        $project->invite($user);
+
+        $this->assertTrue($project->members->contains($user));
     }
 }

@@ -33,7 +33,7 @@ class ProjectTaskTest extends TestCase
         /** @var Project $project */
         $project = app(ProjectFactory::class)->create();
 
-        $attributes = factory('App\Task')->raw(['body' => '']);
+        $attributes = factory(Task::class)->raw(['body' => '']);
 
         $this->actingAs($project->owner)
             ->post($project->path().'/tasks', $attributes)

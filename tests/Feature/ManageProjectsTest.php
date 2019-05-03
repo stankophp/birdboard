@@ -129,7 +129,7 @@ class ManageProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->signIn($user);
 
-        $attributes = factory('App\Project')->raw(['title' => null, 'owner_id' => $user->id]);
+        $attributes = factory(Project::class)->raw(['title' => null, 'owner_id' => $user->id]);
 
         $this->post('/projects', $attributes)->assertSessionHasErrors('title');
     }
@@ -140,7 +140,7 @@ class ManageProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->signIn($user);
 
-        $attributes = factory('App\Project')->raw(['description' => null, 'owner_id' => $user->id]);
+        $attributes = factory(Project::class)->raw(['description' => null, 'owner_id' => $user->id]);
 
         $this->post('/projects', $attributes)->assertSessionHasErrors('description');
     }
@@ -152,7 +152,7 @@ class ManageProjectsTest extends TestCase
         $this->get('/projects')->assertRedirect('login');
 
         // store
-        $attributes = factory('App\Project')->raw();
+        $attributes = factory(Project::class)->raw();
         $this->post('/projects', $attributes)->assertRedirect('login');
 
         // create
@@ -160,7 +160,7 @@ class ManageProjectsTest extends TestCase
 
         // view
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
         $this->get($project->path())->assertRedirect('login');
         $this->get($project->path().'/edit')->assertRedirect('login');
     }
@@ -183,7 +183,7 @@ class ManageProjectsTest extends TestCase
         $this->signIn();
 
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
 
         $this->get($project->path())
             ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
@@ -195,7 +195,7 @@ class ManageProjectsTest extends TestCase
         $this->signIn();
 
         /** @var $project Project */
-        $project = factory('App\Project')->create();
+        $project = factory(Project::class)->create();
 
         $this->patch($project->path(), ['notes' => $this->faker->sentence,])
             ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);

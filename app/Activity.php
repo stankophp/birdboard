@@ -30,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|\App\Activity whereSubjectType($value)
  * @method static Builder|\App\Activity whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $user_id
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Activity whereUserId($value)
  */
 class Activity extends Model
 {
