@@ -11,6 +11,9 @@ class ProjectFactory
     protected $tasksCount = 0;
     protected $user;
 
+    /**
+     * @return Project
+     */
     public function create()
     {
         /** @var Project $project */

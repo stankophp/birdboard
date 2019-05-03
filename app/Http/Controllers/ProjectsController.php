@@ -30,7 +30,7 @@ class ProjectsController extends Controller
         /** @var User $user */
         $user = auth()->user();
 
-        $projects = $user->projects;
+        $projects = $user->allProjects();
 
         return view('projects.index', compact('projects'));
     }
