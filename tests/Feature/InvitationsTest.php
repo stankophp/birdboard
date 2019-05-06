@@ -22,6 +22,54 @@ class InvitationsTest extends TestCase
 
         /** @var $project Project */
         $project = app(ProjectFactory::class)->create();
+
+        $this->actingAs($project->owner)
+            ->post($project->path().'/invitations', [
+                'email' => $user->email
+            ])
+            ->assertRedirect($project->path());
+
+        $this->assertTrue($project->members->contains($user));
+    }
+    /** @test */
+    public function a_email_must_be_for_registered_user()
+    {
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
+
+        $this->actingAs($project->owner)
+            ->post($project->path().'/invitations', [
+                'email' => 'user_no_exist@email.com'
+            ])
+//            ->assertSessionHasErrors(['email']);
+            ->assertStatus(SymfonyResponse::HTTP_NOT_FOUND);
+    }
+
+    /** @test */
+    public function a_project_owner_only_can_invite_a_user()
+    {
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
+
+        /** @var $user User */
+        $user = factory(User::class)->create();
+
+
+        $this->actingAs($user)
+            ->post($project->path().'/invitations', [
+                'email' =>  $user->email
+            ])
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
+    }
+
+    /** @test */
+    public function a_invited_user_can_edit_a_project()
+    {
+        /** @var $user User */
+        $user = factory(User::class)->create();
+
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
         $project->invite($user);
 
         $this->signIn($user);

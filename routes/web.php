@@ -20,6 +20,8 @@ Route::resource('projects', 'ProjectsController')->middleware('auth');
 Route::post('projects/{project}/tasks', 'ProjectTasksController@store')->middleware('auth');
 Route::patch('projects/{project}/tasks/{task}', 'ProjectTasksController@update')->middleware('auth');
 
+Route::post('projects/{project}/invitations', 'ProjectInvitationsController@store')->middleware('auth');
+
 Auth::routes();
 
 //Route::get('/home', 'HomeController@index')->name('home');

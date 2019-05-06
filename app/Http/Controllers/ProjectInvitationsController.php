@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectInvitationsRequest;
 use App\Project;
 use App\Task;
+use App\User;
 use Illuminate\Http\Request;
 
-class ProjectTasksController extends Controller
+class ProjectInvitationsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,16 +33,15 @@ class ProjectTasksController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param ProjectInvitationsRequest $request
      * @param Project $project
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(Project $project)
+    public function store(ProjectInvitationsRequest $request, Project $project)
     {
-        $this->authorize('update', $project);
-
-        request()->validate(['body' => 'required']);
-        $project->addTask(request('body'));
+        $attributes = $request->validated();
+        $user = User::whereEmail($attributes)->firstOrFail();
+        $project->invite($user);
 
         return redirect($project->path());
     }
