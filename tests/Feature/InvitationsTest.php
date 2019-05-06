@@ -31,6 +31,7 @@ class InvitationsTest extends TestCase
 
         $this->assertTrue($project->members->contains($user));
     }
+
     /** @test */
     public function a_email_must_be_for_registered_user()
     {
@@ -41,8 +42,8 @@ class InvitationsTest extends TestCase
             ->post($project->path().'/invitations', [
                 'email' => 'user_no_exist@email.com'
             ])
-//            ->assertSessionHasErrors(['email']);
-            ->assertStatus(SymfonyResponse::HTTP_NOT_FOUND);
+            ->assertSessionHasErrors(['email'], null, 'invitations');
+//            ->assertStatus(SymfonyResponse::HTTP_NOT_FOUND);
     }
 
     /** @test */
@@ -54,6 +55,13 @@ class InvitationsTest extends TestCase
         /** @var $user User */
         $user = factory(User::class)->create();
 
+        $this->actingAs($user)
+            ->post($project->path().'/invitations', [
+                'email' =>  $user->email
+            ])
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
+
+        $project->invite($user);
 
         $this->actingAs($user)
             ->post($project->path().'/invitations', [

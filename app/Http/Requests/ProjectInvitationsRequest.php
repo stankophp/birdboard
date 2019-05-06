@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectInvitationsRequest extends FormRequest
 {
+    protected $errorBag = 'invitations';
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +16,7 @@ class ProjectInvitationsRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('update', $this->route('project'));
+        return Gate::allows('manage', $this->route('project'));
     }
 
     /**
@@ -25,7 +27,7 @@ class ProjectInvitationsRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required', 'exists:users,email'
+            'email' => ['required', 'exists:users,email']
         ];
     }
 }
