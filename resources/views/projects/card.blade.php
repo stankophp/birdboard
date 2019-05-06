@@ -6,6 +6,7 @@
         </a>
     </h3>
     <div class="text-grey mb-4 flex-1">{{ Str::limit($project->description, 150) }}</div>
+    @can('manage', $project)
     <footer>
         <form method="POST" class="text-right" action="{{ route('projects.destroy', ['project' => $project->id]) }}">
             @method('DELETE')
@@ -13,4 +14,5 @@
             <button type="submit" class="button text-xs">Delete</button>
         </form>
     </footer>
+    @endcan
 </div>

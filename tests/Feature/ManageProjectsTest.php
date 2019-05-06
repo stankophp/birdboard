@@ -17,8 +17,7 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_user_can_create_a_project()
     {
-        $user = factory(User::class)->create();
-        $this->signIn($user);
+        $user = $this->signIn();
 
         $this->get('/projects/create')->assertStatus(SymfonyResponse::HTTP_OK);
 
@@ -29,19 +28,28 @@ class ManageProjectsTest extends TestCase
         ];
         $attributes['owner_id'] = $user->id;
 
-        $response = $this->post('/projects', $attributes);
-        /** @var Project $project */
-        $project = Project::where($attributes)->first();
-        $response->assertRedirect($project->path());
-
-        $this->assertDatabaseHas('projects', $attributes);
-
-        $this->get('/projects')->assertSee($attributes['title']);
-
-        $this->get($project->path())
+        $this->actingAs($user)
+            ->followingRedirects()
+            ->post('/projects', $attributes)
             ->assertSee($attributes['title'])
             ->assertSee(substr($attributes['description'], 0, 150))
             ->assertSee($attributes['notes']);
+
+        $this->assertDatabaseHas('projects', $attributes);
+    }
+
+    public function a_user_can_view_own_project()
+    {
+        $user = $this->signIn();
+
+        /** @var $project Project */
+        $project = app(ProjectFactory::class)->create();
+
+        $this->actingAs($user)
+            ->get($project->path())
+            ->assertSee($project->title)
+            ->assertSee(substr($project->description, 0, 150))
+            ->assertSee($project->notes);
     }
 
     /** @test */
@@ -74,6 +82,12 @@ class ManageProjectsTest extends TestCase
         $this->signIn($user);
 
         $this->delete($project->path())
+            ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
+
+        $project->invite($user);
+
+        $this->actingAs($user)
+            ->delete($project->path())
             ->assertStatus(SymfonyResponse::HTTP_FORBIDDEN);
     }
 
